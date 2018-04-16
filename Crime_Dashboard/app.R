@@ -96,7 +96,23 @@ ui <- dashboardPage(
                   choices = unique(mydata$Call.Type),
                   selected = "Impaired Person"),
       
-      h6("Data Compiled by Brad Lindblad, MBA, Fargo, North Dakota.")
+      h4("An interactive dashboard tool for examining trends in Fargo crime. This tool plots the locations of calls made
+         to Fargo police dispatch in 2017."),
+      
+      br(),
+      br(),
+      br(),
+      br(),
+      
+      h6("Data: http://fargond.gov/city-government/departments \n /police/police-records-data/dispatch-logs"),
+      
+      h6("Built by Brad Lindblad, MBA. Fargo, North Dakota."),
+      
+      h6("bradley.lindblad@gmail.com")
+      
+      
+      
+      
   ),
   
   
