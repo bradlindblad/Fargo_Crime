@@ -1,0 +1,22 @@
+# What do people want to know
+  - is my neighborhood safe?
+
+# What hunches or assumptions do people have?
+  - calls around full moons
+
+# Goals
+  1. show overall most dangerous areas
+  2. show geom_point of all crimes
+  3. show any marked increases in crime not due to seasonality
+  
+  
+ # Techniques
+  - look at crime type by month for trends
+  - look closely in Aug/May for trends around college starting
+  - what is the worst weekend for drunk driving?
+  - bar locations vs. DUI
+  
+# Fns to build
+  - plotCrime()  # just crime type in heatmap over Fargo
+  - plotPoints()  # point all crimes with color defining the crime type
+  - plotFacet

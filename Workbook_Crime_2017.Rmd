@@ -1,0 +1,332 @@
+---
+title: "Fargo_Crime_2017"
+output: html_notebook
+---
+
+```{r, warning = F}
+library(tidyverse)
+library(ggmap)
+library(lubridate)
+```
+
+
+```{r}
+my_OD <- read.csv("Fargo_OD.csv", header = T)
+```
+
+```{r}
+str(my_OD)
+```
+
+Plot it   
+Base Map
+```{r}
+myLocation_OD <- c(lon=median(my_OD$Lon),
+                   lat=median(my_OD$Lat))
+
+myMAP_OD <- get_map(myLocation_OD,
+                    source = "google",
+                    maptype = "terrain",
+                    zoom = 12)
+```
+
+Pointmap
+```{r}
+plotpoints_OD <- ggmap(myMAP_OD, darken = c(0.3, "white")) + geom_point(data=my_OD,
+                                        aes(x=Lon, y=Lat),
+                                        size=2,
+                                        color="red",
+                                        alpha=.8)
+plotpoints_OD
+```
+
+Now plot density
+```{r}
+plotdensity_OD <- ggmap(myMAP_OD, darken = c(0.0, "white")) +
+                         stat_density2d(aes(x = Lon, y = Lat, fill = -..level.., alpha = ..level..),
+                                        size = 1,
+                                        bins = 15,
+                                        data = my_OD,
+                                        geom = "polygon") +
+                         scale_fill_gradientn(colors = rainbow(4)) +
+                         scale_alpha(range = c(0.1, 0.1),
+                                     guide = F) +
+                         ggtitle("2017 Fargo Overdose Calls Heatmap") +
+                         labs(subtitle = "Brad Lindblad, MBA",
+                              caption= "Source: http://fargond.gov/city-government/departments \n /police/police-records-data/dispatch-logs") +
+                         theme(legend.position="none",
+                               plot.subtitle = element_text(color="#666666"),
+                               plot.caption = element_text(color="#AAAAAA", size=6)) +
+                         ggsave("2017 Fargo Overdose Calls Heatmap.png") 
+
+
+
+plotdensity_OD
+```
+
+Zoom in downtown
+```{r}
+myLocation_OD_zoom <- c(lon=-96.79,
+                lat=46.876)
+
+myMAP_OD_zoom <- get_map(myLocation_OD_zoom,
+                 maptype = "hybrid",
+                 zoom = 15)
+
+myMAP_OD_zoom <- 
+plotdensity_OD_zoom <- ggmap(myMAP_OD_zoom, darken = c(0.0, "white")) +
+                       stat_density2d(
+                       aes(x = Lon, y = Lat, fill = -..level.., alpha = ..level..),
+                       size = 2, bins = 12, data = my_OD, geom = "polygon") +
+                       scale_fill_gradientn(colours = rainbow(3)) +
+                       scale_alpha(range = c(0.1, 0.2), guide = F) +
+                       ggtitle("2017 Fargo Overdose Calls Heatmap") +
+                       ggsave("2017 Fargo Overdose Calls Heatmap.png") +
+                       labs(subtitle = "Source = Brad Lindblad, MBA") +
+                       theme(legend.position="none")
+
+
+
+plotdensity_OD_zoom
+```
+
+
+Try uploading test of the full data, not all lat/lon included
+```{r}
+full <- read.csv("crime.csv", header = T)
+```
+
+```{r}
+str(full)
+```
+
+Convert "Date.Time" field into actual date field
+```{r}
+full$Date.Time <- lubridate::mdy(full$Date.Time)
+```
+
+
+Convert "Time" field into actual time field
+```{r}
+library(lubridate)
+
+full$Time <- lubridate::mdy_hms(full$Time)
+
+```
+
+
+```{r}
+str(full)
+```
+
+
+Drop the NA rows
+```{r}
+full <- tidyr::drop_na(data = full)
+```
+
+```{r}
+str(full)
+```
+
+
+```{r}
+head(full)
+```
+
+```{r}
+ggplot(data = full) +
+  geom_bar(mapping = aes(full$Month)) 
+```
+Now, build our first plotting function.   
+This one called plotCrime, will simply plot the crime type in a heatmap over Fargo.
+```{r}
+plotCrime_test <- function(title = "title" ){
+  # x = The main title for the graph,
+  # Note center of Fargo using the median latitude and longitude
+  myLocation_OD <- c(lon=median(my_OD$Lon),
+                     lat=median(my_OD$Lat))
+  # Build basemap
+  myMAP_OD <- get_map(myLocation_OD,
+                      source = "google",
+                      maptype = "terrain",
+                      zoom = 12)
+  
+  # Plot actual map
+  ggmap(myMAP_OD, darken = c(0.0, "white")) +
+                         stat_density2d(aes(x = Lon, y = Lat, fill = -..level.., alpha = ..level..),
+                                        size = 1,
+                                        bins = 15,
+                                        data = my_OD,
+                                        geom = "polygon") +
+                         scale_fill_gradientn(colors = heat.colors(4)) +
+                         scale_alpha(range = c(0.1, 0.1),
+                                     guide = F) +
+                         ggtitle(title) +
+                         labs(subtitle = "Brad Lindblad, MBA",
+                              caption="Data: http://fargond.gov/city-government/departments \n /police/police-records-data/dispatch-logs") +
+                         theme(legend.position="none",
+                               plot.subtitle = element_text(color="#666666"),
+                               plot.caption = element_text(color="#AAAAAA", size = 6),
+                               plot.title = element_text(color = "#666666", size = 25)) 
+                        # ggsave(paste(title),'.png') 
+  
+}
+```
+
+
+Next function plots crime but allows us to select the crime type with a subset.  
+```{r}
+plotCrime_old <- function(title = "title", type = "type"){
+  # title = The main title for the graph, type = type of crime to filter on
+  
+  
+  # Pull data
+  mydata <- full  # this is our cleaned data
+  # Note center of Fargo using the median latitude and longitude
+  myLocation_OD <- c(lon=median(mydata$Lon),
+                     lat=median(mydata$Lat))
+  # Build basemap
+  myMAP_OD <- get_map(myLocation_OD,
+                      source = "google",
+                      maptype = "hybrid",
+                      zoom = 12)
+
+  # Subset the data
+  mydata <- dplyr::filter(mydata, Call.Type == type)
+  
+  
+  # Plot actual map
+  ggmap(myMAP_OD, darken = c(0.0, "white")) +
+                         stat_density2d(aes(x = Lon, y = Lat, fill = -..level.., alpha = ..level..),
+                                        size = 1,
+                                        bins = 15,
+                                        data = mydata,
+                                        geom = "polygon") +
+                         scale_fill_gradientn(colors = topo.colors(4)) +
+                         scale_alpha(range = c(0.1, 0.2),
+                                     guide = F) +
+                         ggtitle(title) +
+                         labs(subtitle = "",
+                              caption="Data: http://fargond.gov/city-government/departments \n /police/police-records-data/dispatch-logs") +
+                         theme(legend.position="none",
+                               plot.subtitle = element_text(color="#666666"),
+                               plot.caption = element_text(color="#AAAAAA", size = 6),
+                               plot.title = element_text(color = "#666666", size = 25),
+                               axis.text.x = element_text(angle = 90, hjust = 1))
+                        # ggsave(paste(title),'.png') 
+  
+  
+}
+```
+
+
+
+Try plotting just points for a "heatmap"
+```{r}
+plotCrime_1 <- function(title = "title", type = "type"){
+  # title = The main title for the graph, type = type of crime to filter on
+  
+  
+  # Pull data
+  mydata <- full  # this is our cleaned data
+  # Note center of Fargo using the median latitude and longitude
+  myLocation_OD <- c(lon=median(mydata$Lon),
+                     lat=median(mydata$Lat))
+  # Build basemap
+  myMAP_OD <- get_map(myLocation_OD,
+                      source = "google",
+                      maptype = "hybrid",
+                      zoom = 12)
+
+  # Subset the data
+  mydata <- dplyr::filter(mydata, Call.Type == type)
+  
+  
+  # Plot actual map
+  ggmap(myMAP_OD, darken = c(0.0, "white")) +
+                         geom_point(data=my_OD,
+                                        aes(x=Lon, y=Lat),
+                                        size=5,
+                                        color="red",
+                                        alpha=0.3) +
+                         ggtitle(title) +
+                         labs(subtitle = "",
+                              caption="Data: http://fargond.gov/city-government/departments \n /police/police-records-data/dispatch-logs") +
+                         theme(legend.position="none",
+                               plot.subtitle = element_text(color="#666666"),
+                               plot.caption = element_text(color="#AAAAAA", size = 6),
+                               plot.title = element_text(color = "#666666", size = 25),
+                               axis.text.x = element_text(angle = 90, hjust = 1))
+                        # ggsave(paste(title),'.png') 
+  
+  
+}
+```
+
+Now, we'll make the heatmap fn for the shiny app:
+```{r}
+plotCrime <- function(title = "title", type = "type"){
+  # title = The main title for the graph 
+  # type = type of crime to filter on
+ 
+  # Read data and transform
+  full <- read.csv("crime.csv", header = T)
+  full$Date.Time <- lubridate::mdy(full$Date.Time)
+  full$Time <- lubridate::mdy_hms(full$Time)
+ 
+  # Note center of Fargo using the median latitude and longitude
+  myLocation_OD <- c(lon=median(full$Lon),
+                     lat=median(full$Lat))
+  # Build basemap
+  myMAP_OD <- get_map(myLocation_OD,
+                      source = "google",
+                      maptype = "hybrid",
+                      zoom = 12)
+                    
+
+  # Subset the data
+  mydata <- dplyr::filter(full, Call.Type == type)
+  
+  
+  # Plot actual map
+  ggmap(myMAP_OD, darken = c(0.0, "white")) +
+                         stat_density2d(aes(x = Lon, y = Lat, fill = -..level.., alpha = ..level..),
+                                        size = 1,
+                                        bins = 15,
+                                        data = mydata,
+                                        geom = "polygon") +
+                         scale_fill_gradientn(colors = topo.colors(4)) +
+                         scale_alpha(range = c(0.1, 0.2),
+                                     guide = F) +
+                         ggtitle(title) +
+                         labs(subtitle = "",
+                              caption="Data: http://fargond.gov/city-government/departments \n /police/police-records-data/dispatch-logs") +
+                         theme(legend.position="none",
+                               plot.subtitle = element_text(color="#666666"),
+                               plot.caption = element_text(color="#AAAAAA", size = 6),
+                               plot.title = element_text(color = "#666666", size = 25),
+                               axis.text.x = element_text(angle = 90, hjust = 1))  +
+                         coord_fixed(xlim = c(-96.93,-96.74), ylim = c(46.79, 46.935), ratio = 1/1)
+                         
+                        # ggsave(paste(title),'.png') 
+  
+  
+}
+```
+
+```{r}
+df <- data.frame(
+     x = runif(100, 0, 5),
+     y = runif(100, 0, 5))
+```
+
+```{r}
+library(ggplot2)
+ggplot(df, aes(x=x, y=y)) + geom_point()
+```
+
+```{r}
+ggplot(df, aes(x=x, y=y)) + geom_point() + coord_fixed(0.5)
+```
+

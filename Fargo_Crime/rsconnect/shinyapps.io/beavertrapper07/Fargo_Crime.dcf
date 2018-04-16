@@ -1,0 +1,12 @@
+name: Fargo_Crime
+title: Fargo_Crime
+username:
+account: beavertrapper07
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 314109
+bundleId: 1320071
+url: https://bradleylindblad.shinyapps.io/Fargo_Crime/
+when: 1523838938.87857
+asMultiple: FALSE
+asStatic: FALSE

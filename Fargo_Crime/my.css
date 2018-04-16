@@ -1,0 +1,31 @@
+
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:400i,700|IBM+Plex+Serif:300i|Rock+Salt|Special+Elite');
+
+h1 {
+  font-family: 'Special Elite', cursive;
+  font-weight: 6800;
+  line-height: 1.0;
+  font-size:30pt;
+  color: #516587;
+}
+
+h2 {
+  font-family: 'IBM Plex Serif', serif;
+  font-weight: 600;
+  font-size:medium;
+  line-height: 0.3;
+  color: #516587;
+}
+
+h3 {
+  font-family: 'Special Elite', cursive;
+  font-weight: 200;
+  font-size:medium;
+  line-height: 0.4;
+  color: #516587;
+}
+
+body {
+  background-color: #fff;
+}
+
