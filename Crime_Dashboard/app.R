@@ -108,15 +108,11 @@ ui <- dashboardPage(
       
       h6("Data: http://fargond.gov/city-government/departments \n /police/police-records-data/dispatch-logs"),
       
-      h6("Built by Brad Lindblad, MBA. Fargo, North Dakota."),
-      
-      h6("bradley.lindblad@gmail.com")
-      
-      
-      
-      
+      h6("Written by Brad Lindblad. Fargo, ND. Written in programming language R
+         (R Development Core Team, 2015. Vienna, Austria. www.r-project.org) version 3.4.4 (2018-03-15)."),
+      a("bradley.lindblad@gmail.com", href="mailto:bradley.lindblad@gmail.com")
   ),
-  
+
   
   ## B O D Y
   dashboardBody(
