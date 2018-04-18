@@ -72,7 +72,7 @@ plotWeekday <- function(x = "type"){
   ggplot(mydata,aes(x= mydata$Weekday, fill=..count..))+
     scale_fill_gradient(low = "green", high = "red")+
     geom_bar(width=0.7) +
-    xlab("Month of Crime") +
+    xlab("Weekday of Crime") +
     ylab("Number of Calls") +
     ggtitle("Number of Crimes by Weekday") +
     theme(axis.text.x = element_text(angle = 90, hjust = 1))
