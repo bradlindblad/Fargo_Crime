@@ -3,6 +3,7 @@ library(shinydashboard)
 library(leaflet)
 library(tidyverse)
 library(BH)
+library(leaflet.extras)
 
 
 ##################
@@ -20,7 +21,6 @@ mydata$Time <- lubridate::mdy_hms(mydata$Time)
 leafPlot <- function(x = type){
   
   
-  
   mydata <- filter(mydata, Call.Type == x)
   
   
@@ -29,18 +29,11 @@ leafPlot <- function(x = type){
     
     leaflet::addMiniMap(position = "topleft") %>%
     
-    leaflet::addCircleMarkers(
-      lng = mydata$Lon,
-      lat = mydata$Lat,
-      label = mydata$Description,
-      opacity = 0.2,
-      stroke = F,
-      color = "red")
-  
-  
-  
-  
-  
+    leaflet.extras::addHeatmap(lng = mydata$Lon,
+                               lat = mydata$Lat,
+                               radius = 16,
+                               blur = 30)
+    
 }
 
 plotMonth <- function(x = "type"){
@@ -109,8 +102,9 @@ ui <- dashboardPage(
       h6("Data: http://fargond.gov/city-government/departments \n /police/police-records-data/dispatch-logs"),
       
       h6("Written by Brad Lindblad. Fargo, ND. Written in programming language R
-         (R Development Core Team, 2015. Vienna, Austria. www.r-project.org) version 3.4.4 (2018-03-15)."),
-      a("bradley.lindblad@gmail.com", href="mailto:bradley.lindblad@gmail.com")
+         (R Core Team (2018). R: A language and environment for statistical computing. R Foundation for Statistical
+          Computing, Vienna, Austria. URL https://www.R-project.org/) version 3.4.4 (2018-03-15)."),
+      a("bradley.lindblad@gmail.com", href = "mailto:bradley.lindblad@gmail.com")
   ),
 
   

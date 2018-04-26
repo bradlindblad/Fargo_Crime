@@ -5,8 +5,8 @@ account: bradleylindblad
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 314109
-bundleId: 1324491
+bundleId: 1326503
 url: https://bradleylindblad.shinyapps.io/Fargo_Crime/
-when: 1524012459.83426
+when: 1524091920.65371
 asMultiple: FALSE
 asStatic: FALSE
