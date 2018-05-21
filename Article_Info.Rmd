@@ -59,7 +59,7 @@ head(full)
 
 Recode the Call.Type to smaller groups
 ```{r}
-full.recode <- dplyr::mutate(full, Category = recode(full$Call.Type, 
+full.recode <- dplyr::mutate(full, Category = recode(full$Call.Type,   # make new categories
                                                        "Abuse" = "Violent",
                                                        "Assault" = "Violent",
                                                        "Bicycle - Theft" = "Property",
@@ -83,15 +83,20 @@ full.recode <- dplyr::mutate(full, Category = recode(full$Call.Type,
                                                        "Theft" = "Property",
                                                        "Vandalism" = "Property",
                                                        "Vehicle Break In" = "Property"))
+
+
     ```
 
 
 
 #### Graphs Begin
 
+## 1. Crime category by time of day
 ```{r}
-ggplot(full.recode) +
-  geom_point(mapping = aes(Date.Time, Lat, color = Category)) +
-  theme_wsj()
+
+ggplot(full.recode, aes(x=Time)) + geom_density(aes(fill=as.factor(Category), colour=Category, y=..density..), stat="density", position="identity", alpha=0.4) + theme_wsj(base_size = 8) + theme(text=element_text(family="sans", face="plain", color="#000000", size=8, hjust=0.5, vjust=0.5)) + guides(fill=guide_legend(title="Category"), colour=guide_legend(title="Category"))  + ylab("density") + xlab("Time of Day") + ggtitle("") +
+scale_x_datetime(labels = date_format("%H:%M")) + theme(axis.text.y=element_blank()) 
+ggsave(filename = "plot1.png")
 ```
+
 
