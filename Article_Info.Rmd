@@ -1,0 +1,97 @@
+---
+title: "Fargo_Crime_2017"
+output: html_notebook
+---
+
+```{r, warning = F}
+library(tidyverse)
+library(ggmap)
+library(lubridate)
+library(ggthemes)
+```
+
+
+#### Upload Data
+
+Try uploading test of the full data, not all lat/lon included
+```{r}
+full <- read.csv("crime.csv", header = T)
+```
+
+```{r}
+str(full)
+```
+#### Data Wrangling
+
+Convert "Date.Time" field into actual date field
+```{r}
+full$Date.Time <- lubridate::mdy(full$Date.Time)
+```
+
+
+Convert "Time" field into actual time field
+```{r}
+library(lubridate)
+
+full$Time <- lubridate::mdy_hms(full$Time)
+
+```
+
+
+```{r}
+str(full)
+```
+
+
+Drop the NA rows
+```{r}
+full <- tidyr::drop_na(data = full)
+```
+
+```{r}
+str(full)
+```
+
+
+```{r}
+head(full)
+```
+
+Recode the Call.Type to smaller groups
+```{r}
+full.recode <- dplyr::mutate(full, Category = recode(full$Call.Type, 
+                                                       "Abuse" = "Violent",
+                                                       "Assault" = "Violent",
+                                                       "Bicycle - Theft" = "Property",
+                                                       "Bomb Threat" = "Violent",
+                                                       "Burglary" = "Property",
+                                                       "Death Notification" = "Violent",
+                                                       "Domestic" = "Violent",
+                                                       "Graffiti" = "Property",
+                                                       "Gun Shots Heard" = "Violent",
+                                                       "Harassment" = "Violent",
+                                                       "Impaired Driver" = "Drugs/Alcohol",
+                                                       "Impaired Person" = "Drugs/Alcohol",
+                                                       "Kidnapping" = "Violent",
+                                                       "Loud Party/People" = "Drugs/Alcohol",
+                                                       "Overdose - Poisoning" = "Drugs/Alcohol",
+                                                       "Prowler/Peeper" = "Violent",
+                                                       "Robbery" = "Property", 
+                                                       "Sexual Assault" = "Violent",
+                                                       "Stab/Gunshot/Penetrating" = "Violent",
+                                                       "Stolen Vehicle" = "Property",
+                                                       "Theft" = "Property",
+                                                       "Vandalism" = "Property",
+                                                       "Vehicle Break In" = "Property"))
+    ```
+
+
+
+#### Graphs Begin
+
+```{r}
+ggplot(full.recode) +
+  geom_point(mapping = aes(Date.Time, Lat, color = Category)) +
+  theme_wsj()
+```
+
