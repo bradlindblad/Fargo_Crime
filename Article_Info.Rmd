@@ -100,3 +100,80 @@ ggsave(filename = "plot1.png")
 ```
 
 
+
+
+
+
+
+
+
+
+Plot Calendar Heatmap
+using ggTimeSeries
+
+Wrangle data into occurences by day
+```{r}
+library(data.table)
+calendar.data <- dplyr::add_count(full.recode, Date.Time)
+calendar.data <- dplyr::arrange(calendar.data, Date.Time)
+
+calendar.data <- calendar.data %>% 
+  group_by(Date.Time) %>% 
+  summarise(avg = mean(n))
+
+# need to coerce to data.table
+calendar.data <- data.table::data.table(Date = calendar.data$Date.Time,
+                                        Crimes = calendar.data$avg)
+```
+
+Now we plot it
+```{r}
+library(viridis)
+library(ggTimeSeries)
+
+
+
+calendar.plot <- ggplot_calendar_heatmap(calendar.data,
+                                         'Date',
+                                         'Crimes') 
+calendar.plot +
+  xlab(NULL) +
+  ylab(NULL) +
+  scale_fill_viridis(alpha = 0.7)
+
+```
+
+
+```{r}
+# creating some data
+
+
+library(ggTimeSeries)
+set.seed(1)
+dtData = data.table(
+      DateCol = seq(
+         as.Date("1/01/2014", "%d/%m/%Y"),
+         as.Date("31/12/2015", "%d/%m/%Y"),
+         "days"
+      ),
+      ValueCol = runif(730)
+   )
+dtData[, ValueCol := ValueCol + (strftime(DateCol,"%u") %in% c(6,7) * runif(1) * 0.75), .I]
+dtData[, ValueCol := ValueCol + (abs(as.numeric(strftime(DateCol,"%m")) - 6.5)) * runif(1) * 0.75, .I]
+
+# base plot
+p1 = ggplot_calendar_heatmap(
+   dtData,
+   'DateCol',
+   'ValueCol'
+)
+
+# adding some formatting
+p1 + 
+   xlab(NULL) + 
+   ylab(NULL) + 
+   scale_fill_continuous(low = 'green', high = 'red') + 
+   facet_wrap(~Year, ncol = 1)
+```
+
+
