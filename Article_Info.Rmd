@@ -144,36 +144,6 @@ calendar.plot +
 ```
 
 
-```{r}
-# creating some data
 
-
-library(ggTimeSeries)
-set.seed(1)
-dtData = data.table(
-      DateCol = seq(
-         as.Date("1/01/2014", "%d/%m/%Y"),
-         as.Date("31/12/2015", "%d/%m/%Y"),
-         "days"
-      ),
-      ValueCol = runif(730)
-   )
-dtData[, ValueCol := ValueCol + (strftime(DateCol,"%u") %in% c(6,7) * runif(1) * 0.75), .I]
-dtData[, ValueCol := ValueCol + (abs(as.numeric(strftime(DateCol,"%m")) - 6.5)) * runif(1) * 0.75, .I]
-
-# base plot
-p1 = ggplot_calendar_heatmap(
-   dtData,
-   'DateCol',
-   'ValueCol'
-)
-
-# adding some formatting
-p1 + 
-   xlab(NULL) + 
-   ylab(NULL) + 
-   scale_fill_continuous(low = 'green', high = 'red') + 
-   facet_wrap(~Year, ncol = 1)
-```
 
 
