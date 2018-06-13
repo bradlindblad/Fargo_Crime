@@ -8,6 +8,7 @@ library(tidyverse)
 library(ggmap)
 library(lubridate)
 library(ggthemes)
+library(scales)
 ```
 
 
@@ -87,15 +88,54 @@ full.recode <- dplyr::mutate(full, Category = recode(full$Call.Type,   # make ne
 
     ```
 
+```{r}
+library(ggradar)
+
+suppressPackageStartupMessages(library(dplyr))
+library(scales)
+library(tibble)
+
+ mtcars %>%
+      rownames_to_column( var = "group" ) %>%
+      mutate_at(vars(-group),funs(rescale)) %>%
+      tail(4) %>% select(1:10) -> mtcars_radar
+ mtcars_radar
+#it <- data.frame(Value = c(12,34,6,7), Name = factor('hi','how','are','you'))
+ggradar(mtcars_radar)
+```
+
+Mutate a new column with the hour the crime took place within
+```{r}
+full.spread <- dplyr::mutate(full, Time.Hour = hour(full$Time))
+```
 
 
-#### Graphs Begin
+
 
 ## 1. Crime category by time of day
 ```{r}
 
-ggplot(full.recode, aes(x=Time)) + geom_density(aes(fill=as.factor(Category), colour=Category, y=..density..), stat="density", position="identity", alpha=0.4) + theme_wsj(base_size = 8) + theme(text=element_text(family="sans", face="plain", color="#000000", size=8, hjust=0.5, vjust=0.5)) + guides(fill=guide_legend(title="Category"), colour=guide_legend(title="Category"))  + ylab("density") + xlab("Time of Day") + ggtitle("") +
-scale_x_datetime(labels = date_format("%H:%M")) + theme(axis.text.y=element_blank()) 
+ggplot(full.recode, aes(x = Time)) + 
+  geom_density(aes(fill = as.factor(Category),
+                   colour = Category, y = ..density..),
+               stat = "density",
+               position = "identity",
+               alpha = 0.4) + 
+  theme_economist(base_size = 10) + 
+  theme(text = element_text(family = "sans",
+                          face = "plain",
+                          color = "#000000",
+                          size = 8,
+                          hjust = 0.5,
+                          vjust = 0.5)) + 
+  guides(fill = guide_legend(title = "Category"), 
+         colour = guide_legend(title = "Category"))  + 
+  ylab("density") + 
+  xlab("Time of Day") + 
+  ggtitle("") +
+  scale_x_datetime(labels = date_format("%H:%M")) + 
+  theme(axis.text.y = element_blank()) 
+scale_x_datetime()
 ggsave(filename = "plot1.png")
 ```
 
@@ -143,7 +183,33 @@ calendar.plot +
 
 ```
 
+```{r}
+# order by month
+full$Month <- factor(full$Month, c("Jan", "Feb", "Mar", "Apr", "May",
+                                   "Jun", "Jul", "Aug", "Sep", "Oct",
+                                   "Nov", "Dec"))
 
+ggplot(data = full, aes(Month)) +
+  geom_bar(stat = "count", fill = "indianred1", alpha = 0.7) +
+  ggthemes::theme_economist(base_size = 10) 
 
+#ggplot2::ggsave(filename = "plot2.jpg")
+```
+
+```{r}
+# order by weekday
+full$Weekday <- factor(full$Weekday, c("Sunday", "Monday", "Tuesday", "Wednesday",
+                                       "Thursday","Friday", "Saturday"))
+
+ggplot(data = full, aes(Weekday)) +
+  geom_bar(stat = "count", fill = "indianred1", alpha = 0.7) +
+  ggthemes::theme_economist(base_size = 10) 
+
+#ggplot2::ggsave(filename = "plot3.jpg")
+```
+
+```{r}
+
+```
 
 
