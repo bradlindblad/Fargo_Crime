@@ -88,21 +88,7 @@ full.recode <- dplyr::mutate(full, Category = recode(full$Call.Type,   # make ne
 
     ```
 
-```{r}
-library(ggradar)
 
-suppressPackageStartupMessages(library(dplyr))
-library(scales)
-library(tibble)
-
- mtcars %>%
-      rownames_to_column( var = "group" ) %>%
-      mutate_at(vars(-group),funs(rescale)) %>%
-      tail(4) %>% select(1:10) -> mtcars_radar
- mtcars_radar
-#it <- data.frame(Value = c(12,34,6,7), Name = factor('hi','how','are','you'))
-ggradar(mtcars_radar)
-```
 
 Mutate a new column with the hour the crime took place within
 ```{r}
@@ -208,8 +194,28 @@ ggplot(data = full, aes(Weekday)) +
 #ggplot2::ggsave(filename = "plot3.jpg")
 ```
 
-```{r}
 
+
+
+
+
+
+Where is the most crime?
+
+```{r}
+library(leaflet)
+library(leaflet.extras)
 ```
 
+```{r}
+leafplot <- leaflet::leaflet(data = full) %>%
+  addProviderTiles(providers$OpenStreetMap.DE) %>%
+  addCircles(lng = full$Lon,
+             lat = full$Lat)
+
+leafplot
+htmlwidgets::saveWidget(widget = leafplot,
+                        file = "leafplot.html",
+                        selfcontained = T)
+```
 
