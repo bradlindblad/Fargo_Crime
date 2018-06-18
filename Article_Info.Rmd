@@ -219,3 +219,55 @@ htmlwidgets::saveWidget(widget = leafplot,
                         selfcontained = T)
 ```
 
+
+What about using ggplot and gganimate?
+
+
+```{r}
+library(gganimate)
+```
+
+```{r}
+full.recode.order <- full.recode
+full.recode.order$Month <- recode(full.recode.order$Month,'Jan' = 1, 'Feb' = 2, 'Mar' = 3, 'Apr' = 4,
+                                          'May' = 5, 'Jun' = 6, 'Jul' = 7, 'Aug' = 8,
+                                          'Sep' = 9, 'Oct' = 10, 'Nov' = 11, 'Dec' = 12)
+```
+
+
+```{r}
+# order by month
+full.recode$Month <- factor(full.recode$Month, c("Jan", "Feb", "Mar", "Apr", "May",
+                                   "Jun", "Jul", "Aug", "Sep", "Oct",
+                                   "Nov", "Dec"))
+
+
+myLocation_OD <- c(lon = median(full.recode$Lon),
+                   lat = median(full.recode$Lat))
+
+myMAP_OD <- get_map(myLocation_OD,
+                    source = "google",
+                    maptype = "roadmap",
+                    zoom = 12)
+myMAP_OD
+```
+
+Pointmap
+```{r}
+
+
+plotpoints_OD <- ggmap(myMAP_OD, darken = c(0.1, "white"), extent = "device") + geom_point(data = full.recode.order,
+                                        aes(frame = full.recode.order$Month, cumulative = TRUE, x = Lon, y = Lat, color = Category),
+                                        size = 3 ,
+                                        alpha = 0.4) +
+  ggtitle("Crime Growth in 2017") +
+  theme(legend.position = c(0.83, 0.16)) 
+  
+
+
+gganimate(plotpoints_OD, filename = "animatedcrime.gif",interval = 1.0, title_frame = F)
+#gganimate(plotpoints_OD, "animatedcrime.gif")
+
+```
+
+
